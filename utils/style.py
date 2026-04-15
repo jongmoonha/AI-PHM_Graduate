@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.font_manager as fm
 import os
+import sys
+import subprocess
 
 COLORS = {
     'primary': '#1B4F72',
@@ -40,7 +43,34 @@ def setup_notebook():
         'axes.titleweight': 'bold',
         'figure.constrained_layout.use': True,
     })
-    # 한글 폰트 설정 (Windows)
+    _setup_korean_font()
+    plt.rcParams['axes.unicode_minus'] = False
+
+
+def _setup_korean_font():
+    candidates = []
     if os.name == 'nt':
-        plt.rcParams['font.family'] = 'Malgun Gothic'
-        plt.rcParams['axes.unicode_minus'] = False
+        candidates = ['Malgun Gothic', 'NanumGothic']
+    elif sys.platform == 'darwin':
+        candidates = ['AppleGothic', 'NanumGothic']
+    else:
+        candidates = ['NanumGothic', 'NanumBarunGothic', 'Noto Sans CJK KR', 'Noto Sans KR']
+
+    installed = {f.name for f in fm.fontManager.ttflist}
+    for name in candidates:
+        if name in installed:
+            plt.rcParams['font.family'] = name
+            return
+
+    # Colab/Linux fallback: install Nanum and register
+    if 'google.colab' in sys.modules or sys.platform.startswith('linux'):
+        try:
+            subprocess.run(['apt-get', 'install', '-y', '-qq', 'fonts-nanum'],
+                           check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            font_paths = fm.findSystemFonts(fontpaths=['/usr/share/fonts/truetype/nanum'])
+            for fp in font_paths:
+                fm.fontManager.addfont(fp)
+            if any('Nanum' in f.name for f in fm.fontManager.ttflist):
+                plt.rcParams['font.family'] = 'NanumGothic'
+        except Exception:
+            pass
