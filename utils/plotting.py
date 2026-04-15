@@ -33,7 +33,7 @@ def stem_plot(ax, x, y, color=None, markersize=4, linewidth=0.8, **kwargs):
     plt.setp(baseline, visible=False)
 
 
-def plot_time_signal(t, x, ax=None, title='', xlabel='시간 (s)', ylabel='진폭',
+def plot_time_signal(t, x, ax=None, title='', xlabel='Time (s)', ylabel='Amplitude',
                      color=None, **kwargs):
     """시간 신호 플롯.
 
@@ -94,13 +94,13 @@ def plot_spectrum(freq, amp, ax=None, title='', db=False, one_sided=True,
 
     ax.plot(freq, amp, color=color, **kwargs)
     ax.set_title(title)
-    ax.set_xlabel('주파수 (Hz)')
-    ax.set_ylabel('dB' if db else '진폭')
+    ax.set_xlabel('Frequency (Hz)')
+    ax.set_ylabel('dB' if db else 'Amplitude')
     return ax
 
 
-def plot_time_and_spectrum(t, x, fs, figsize=(14, 5), title_time='시간 영역',
-                           title_freq='주파수 영역'):
+def plot_time_and_spectrum(t, x, fs, figsize=(14, 5), title_time='Time Domain',
+                           title_freq='Frequency Domain'):
     """시간 + 주파수 영역 나란히 플롯 — 가장 자주 쓰는 패턴.
 
     Parameters
@@ -124,15 +124,15 @@ def plot_time_and_spectrum(t, x, fs, figsize=(14, 5), title_time='시간 영역'
     # 시간 영역
     axes[0].plot(t, x, color=LINE_COLORS[0])
     axes[0].set_title(title_time)
-    axes[0].set_xlabel('시간 (s)')
-    axes[0].set_ylabel('진폭')
+    axes[0].set_xlabel('Time (s)')
+    axes[0].set_ylabel('Amplitude')
 
     # 주파수 영역
     amp, freq = _fft(x, fs)
     axes[1].plot(freq, amp, color=LINE_COLORS[1])
     axes[1].set_title(title_freq)
-    axes[1].set_xlabel('주파수 (Hz)')
-    axes[1].set_ylabel('진폭')
+    axes[1].set_xlabel('Frequency (Hz)')
+    axes[1].set_ylabel('Amplitude')
 
     return fig, axes
 
@@ -157,7 +157,7 @@ def plot_fourier_coeffs(cn_dict, f0=None, title=''):
 
     if f0 is not None:
         xs = ns * f0
-        xlabel = '주파수 (Hz)'
+        xlabel = 'Frequency (Hz)'
     else:
         xs = ns
         xlabel = '$n$'
@@ -171,7 +171,7 @@ def plot_fourier_coeffs(cn_dict, f0=None, title=''):
     plt.setp(bl, color='gray')
     axes[0].set_xlabel(xlabel)
     axes[0].set_ylabel('$|c_n|$')
-    axes[0].set_title('진폭 스펙트럼')
+    axes[0].set_title('Amplitude Spectrum')
 
     # 위상
     ml2, sl2, bl2 = axes[1].stem(xs, phases / np.pi)
@@ -180,7 +180,7 @@ def plot_fourier_coeffs(cn_dict, f0=None, title=''):
     plt.setp(bl2, color='gray')
     axes[1].set_xlabel(xlabel)
     axes[1].set_ylabel(r'$\angle c_n\, /\, \pi$')
-    axes[1].set_title('위상 스펙트럼')
+    axes[1].set_title('Phase Spectrum')
 
     if title:
         fig.suptitle(title, fontsize=13, fontweight='bold')
@@ -203,14 +203,14 @@ def plot_partial_sum(t, x_target, partial_sums, title=''):
         제목
     """
     fig, ax = plt.subplots(figsize=(11, 4))
-    ax.plot(t, x_target, '--', color='gray', alpha=0.4, label='원래 파형')
+    ax.plot(t, x_target, '--', color='gray', alpha=0.4, label='Original')
 
     for i, (approx, label) in enumerate(partial_sums):
         ax.plot(t, approx, color=LINE_COLORS[i % len(LINE_COLORS)],
                 linewidth=1.5, label=label)
 
-    ax.set_xlabel('시간 (초)')
-    ax.set_ylabel('진폭')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Amplitude')
     ax.legend(fontsize=9)
     if title:
         ax.set_title(title, fontsize=12, fontweight='bold')
@@ -242,6 +242,6 @@ def plot_comparison(signals, labels, t=None, fs=None, figsize=(12, 5)):
             ax.plot(sig, color=color, label=label)
 
     ax.legend()
-    ax.set_xlabel('시간 (s)' if t is not None else '샘플')
-    ax.set_ylabel('진폭')
+    ax.set_xlabel('Time (s)' if t is not None else 'Sample')
+    ax.set_ylabel('Amplitude')
     return fig, ax

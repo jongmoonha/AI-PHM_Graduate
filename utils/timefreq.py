@@ -76,8 +76,8 @@ def plot_spectrogram(f, t, Sxx, ax=None, db=True, log_freq=False,
     if log_freq:
         ax.set_yscale('log')
 
-    ax.set_xlabel('시간 (s)')
-    ax.set_ylabel('주파수 (Hz)')
+    ax.set_xlabel('Time (s)')
+    ax.set_ylabel('Frequency (Hz)')
 
     return pcm
 
