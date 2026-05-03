@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# IDE / Tools
+.vscode/
+.idea/
+pyrightconfig.json
+.omc/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build / cache artifacts
+_review_imgs/
+_rebuild_*.py
+
+# src/ — local-only authoring/preview files (Colab links etc.); not tracked
+src/
+
+# OneDrive sync
+*.tmp
