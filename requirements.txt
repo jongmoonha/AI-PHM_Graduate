@@ -5,3 +5,5 @@ pandas
 librosa
 PyWavelets
 soundfile
+sympy
+EMD-signal

@@ -104,10 +104,10 @@ def filtering(x, fs, ftype='band', f_low=None, f_high=None, f_cut=None, order=4)
         입력 신호
     fs : float
         샘플링 주파수 (Hz)
-    ftype : {'band', 'bandpass', 'high', 'highpass', 'low', 'lowpass'}
+    ftype : {'band', 'bandpass', 'high', 'highpass', 'low', 'lowpass', 'notch', 'bandstop'}
         필터 종류
     f_low, f_high : float, optional
-        'band' 일 때 하한/상한 주파수 (Hz)
+        'band' 일 때 통과 대역, 'notch' 일 때 제거 대역의 하한/상한 주파수 (Hz)
     f_cut : float, optional
         'high' 또는 'low' 일 때 차단 주파수 (Hz)
     order : int
@@ -123,6 +123,7 @@ def filtering(x, fs, ftype='band', f_low=None, f_high=None, f_cut=None, order=4)
     >>> y = filtering(x, fs, 'band', f_low=5, f_high=12)
     >>> y = filtering(x, fs, 'high', f_cut=5)
     >>> y = filtering(x, fs, 'low',  f_cut=5)
+    >>> y = filtering(x, fs, 'notch', f_low=58, f_high=62)
     """
     nyq = fs / 2.0
     t = ftype.lower()
@@ -138,8 +139,12 @@ def filtering(x, fs, ftype='band', f_low=None, f_high=None, f_cut=None, order=4)
         if f_cut is None:
             raise ValueError("'low' 필터에는 f_cut 을 지정해야 합니다.")
         Wn, btype = f_cut / nyq, 'low'
+    elif t in ('notch', 'bandstop'):
+        if f_low is None or f_high is None:
+            raise ValueError("'notch' 필터에는 f_low, f_high 를 지정해야 합니다.")
+        Wn, btype = np.array([f_low, f_high]) / nyq, 'bandstop'
     else:
-        raise ValueError(f"ftype 은 'band'|'high'|'low' 중 하나여야 합니다 (입력: {ftype!r})")
+        raise ValueError(f"ftype 은 'band'|'high'|'low'|'notch' 중 하나여야 합니다 (입력: {ftype!r})")
 
     z, p, k = signal.butter(order, Wn, btype=btype, output='zpk')
     sos = signal.zpk2sos(z, p, k)
@@ -179,8 +184,12 @@ def filtering_zerophase(x, fs, ftype='band', f_low=None, f_high=None, f_cut=None
         if f_cut is None:
             raise ValueError("'low' 필터에는 f_cut 을 지정해야 합니다.")
         Wn, btype = f_cut / nyq, 'low'
+    elif t in ('notch', 'bandstop'):
+        if f_low is None or f_high is None:
+            raise ValueError("'notch' 필터에는 f_low, f_high 를 지정해야 합니다.")
+        Wn, btype = np.array([f_low, f_high]) / nyq, 'bandstop'
     else:
-        raise ValueError(f"ftype 은 'band'|'high'|'low' 중 하나여야 합니다 (입력: {ftype!r})")
+        raise ValueError(f"ftype 은 'band'|'high'|'low'|'notch' 중 하나여야 합니다 (입력: {ftype!r})")
 
     z, p, k = signal.butter(order, Wn, btype=btype, output='zpk')
     sos = signal.zpk2sos(z, p, k)
