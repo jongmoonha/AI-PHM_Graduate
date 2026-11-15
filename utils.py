@@ -6,13 +6,19 @@
 
 제공 함수
 ---------
-fft(x, fs)                                  단측 진폭 스펙트럼
-bandpass(x, fs, f_low, f_high, order=4)     Butterworth 대역통과 (filtfilt)
+fft(x, fs, n=None)                          단측 진폭 스펙트럼 (n > len(x) 이면 제로패딩)
+fft_full(x, fs)                             양측 복소 스펙트럼 (fftshift, 1/N 정규화)
+filtering(x, fs, ftype, f_low, f_high, f_cut, order=4)
+                                            Butterworth 필터 — 인과 단일 패스 (sosfilt)
+filtering_zerophase(x, fs, ftype, f_low, f_high, f_cut, order=4)
+                                            Butterworth 필터 — 영위상 (sosfiltfilt)
 hilbert_envelope(x)                         힐베르트 포락선
 resampling(t, v, deg, f_resampling, trig)   각도 기반 재샘플링 (order analysis)
 MEDA(x, FilterSize=5, remain=False)         최소엔트로피 디콘볼루션
 feature_time(v)                             RMS / Skew / Kurt / CF
 feature_freq(v, fs, band)                   주파수 대역별 RMS
+feature(v, fs, band_energy_and_filter, band_from_envelope)
+                                            시간·원본 대역·필터링·포락선 대역 특징 종합
 draw_features(...)                          feature 비교 그림
 """
 
@@ -157,8 +163,8 @@ def filtering_zerophase(x, fs, ftype='band', f_low=None, f_high=None, f_cut=None
     """Butterworth 필터링 — **zero-phase** 버전.
 
     `filtering` 과 동일한 SOS 구현을 **`sosfiltfilt`** 로 전·후방 2회 적용하여
-    위상 지연을 0 으로 만든다. 크기 응답은 $|H|^2$ 가 되므로 cutoff 에서 −6 dB
-    (단일 `sosfilt`) 가 아니라 −12 dB 지점이 된다. 인과성(실시간 동작) 이
+    위상 지연을 0 으로 만든다. 크기 응답은 $|H|^2$ 가 되므로 cutoff 에서 −3 dB
+    (단일 `sosfilt`) 가 아니라 −6 dB 지점이 된다. 인과성(실시간 동작) 이
     필요 없는 **사후 분석용**.
 
     Parameters
@@ -318,7 +324,7 @@ def feature_time(v):
     RMS = np.sqrt(np.mean(v ** 2))
     SKEW = stats.skew(v)
     KURT = stats.kurtosis(v, axis=0, fisher=False)
-    CF = np.max(v) / RMS
+    CF = np.max(np.abs(v)) / RMS
 
     features = np.array([RMS, SKEW, KURT, CF])
     names = ['RMS', 'Skew', 'Kurt', 'CF']
